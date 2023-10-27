@@ -127,7 +127,7 @@ module Samvera
 
       # https://docs.github.com/en/graphql/reference/mutations#createprojectv2
       # https://docs.github.com/en/graphql/reference/input-objects#createprojectv2input
-      def create_project_mutation
+      def self.create_project_mutation
         <<-GRAPHQL
           mutation($ownerId: ID!, $title: String!, $repositoryId: ID!) {
             createProjectV2(input: { ownerId: $ownerId, title: $title, repositoryId: $repositoryId }) {
@@ -219,7 +219,7 @@ module Samvera
       # https://docs.github.com/en/graphql/reference/queries#organization
       # https://docs.github.com/en/graphql/reference/objects#organization
       # https://docs.github.com/en/graphql/reference/objects#projectv2
-      def find_projects_by_org_query
+      def self.find_projects_by_org_query
         <<-GRAPHQL
           query($login: String!) {
             organization(login: $login) {
@@ -265,7 +265,7 @@ module Samvera
         variables = {
           login:
         }
-        results = execute_graphql_query(query: find_projects_by_org_query, variables:)
+        results = execute_graphql_query(query: self.class.find_projects_by_org_query, variables:)
         create_project_v2 = results["organization"]
         projects_v2 = create_project_v2["projectsV2"]
         nodes = projects_v2["nodes"]
@@ -278,7 +278,7 @@ module Samvera
           title:,
           repositoryId: repository_id
         }
-        results = execute_graphql_query(query: create_project_mutation, variables:)
+        results = execute_graphql_query(query: self.class.create_project_mutation, variables:)
         create_project_v2 = results["createProjectV2"]
         project_v2 = create_project_v2["projectV2"]
         project_v2

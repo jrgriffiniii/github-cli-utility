@@ -23,9 +23,14 @@ require "simplecov"
 SimpleCov.start
 
 dir_path = File.dirname(__FILE__)
-pattern = File.join(dir_path, "..", "cli", "**", "*rb")
-paths = Dir.glob(pattern)
-paths.each { |file| require(file) }
+
+lib_pattern = File.join(dir_path, "..", "cli", "**", "*rb")
+lib_paths = Dir.glob(lib_pattern)
+lib_paths.each { |file| require(file) }
+
+support_pattern = File.join(dir_path, "..", "spec", "support", "**", "*rb")
+support_paths = Dir.glob(support_pattern)
+support_paths.each { |file| require(file) }
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
