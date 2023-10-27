@@ -142,13 +142,12 @@ module Samvera
 
       # https://docs.github.com/en/graphql/reference/mutations#deleteprojectv2
       # https://docs.github.com/en/graphql/reference/input-objects#deleteprojectv2input
-      def delete_project_mutation
+      def self.delete_project_mutation
         <<-GRAPHQL
           mutation($projectId: ID!) {
             deleteProjectV2(input: { projectId: $projectId }) {
               projectV2 {
                 id
-                title
               }
             }
           }
@@ -311,7 +310,7 @@ module Samvera
         variables = {
           projectId: project_id
         }
-        results = execute_graphql_query(query: delete_project_mutation, variables:)
+        results = execute_graphql_query(query: self.class.delete_project_mutation, variables:)
         create_project_v2 = results["deleteProjectV2"]
         project_v2 = create_project_v2["projectV2"]
         project_v2
