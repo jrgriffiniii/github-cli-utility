@@ -20,6 +20,9 @@ ENV["RAILS_ENV"] = "test"
 require "pry-byebug"
 require "webmock/rspec"
 require "simplecov"
+SimpleCov.add_filter([
+  "spec",
+])
 SimpleCov.start
 
 dir_path = File.dirname(__FILE__)
