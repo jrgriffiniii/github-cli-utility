@@ -17,43 +17,6 @@ RSpec.describe Samvera::Project do
     }
   end
 
-  let(:mutation) { Samvera::GraphQL::Client.delete_project_mutation }
-  let(:variables) do
-    {
-      projectId: node_id
-    }
-  end
-  let(:graphql_results) do
-    {
-      data: {
-        deleteProjectV2: {
-          projectV2: {
-            id: node_id
-          }
-        }
-      }
-    }
-  end
-  let(:graphql_response) do
-    JSON.generate(graphql_results)
-  end
-  let(:graphql_query) do
-    {
-      query: mutation,
-      variables:
-    }
-  end
-  let(:graphql_query_json) { JSON.generate(graphql_query) }
-  let(:access_token) { "access-token" }
-  let(:graphql_query_headers) do
-    {
-      "Accept" => "application/json",
-      "Authorization" => "bearer #{access_token}",
-      "Content-Type" => "application/json"
-    }
-  end
-  let(:graphql_api_uri) { Samvera::GraphQL::Client.default_uri }
-
   before do
     allow(client).to receive(:access_token).and_return("access-token")
 
@@ -64,6 +27,43 @@ RSpec.describe Samvera::Project do
   end
 
   describe "#delete" do
+    let(:mutation) { Samvera::GraphQL::Client.delete_project_mutation }
+    let(:variables) do
+      {
+        projectId: node_id
+      }
+    end
+    let(:graphql_results) do
+      {
+        data: {
+          deleteProjectV2: {
+            projectV2: {
+              id: node_id
+            }
+          }
+        }
+      }
+    end
+    let(:graphql_response) do
+      JSON.generate(graphql_results)
+    end
+    let(:graphql_query) do
+      {
+        query: mutation,
+        variables:
+      }
+    end
+    let(:graphql_query_json) { JSON.generate(graphql_query) }
+    let(:access_token) { "access-token" }
+    let(:graphql_query_headers) do
+      {
+        "Accept" => "application/json",
+        "Authorization" => "bearer #{access_token}",
+        "Content-Type" => "application/json"
+      }
+    end
+    let(:graphql_api_uri) { Samvera::GraphQL::Client.default_uri }
+
     before do
       project.delete
     end
