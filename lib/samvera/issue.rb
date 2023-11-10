@@ -16,11 +16,9 @@ module Samvera
                   :draft,
                   :events_url,
                   :html_url,
-                  :id,
                   :labels_url,
                   :locked,
                   :milestone,
-                  :node_id,
                   :number,
                   :performed_via_github_app,
                   :pull_request,
@@ -29,23 +27,43 @@ module Samvera
                   :state_reason,
                   :timeline_url,
                   :title,
-                  :updated_at,
-                  :url
+                  :updated_at
 
-    def self.build_from_hash(owner:, repository:, values:)
-      values.map do |repo_json|
-        attrs = repo_json.to_hash
+    def self.build_from_hash(repository:, response:)
+      values = response.to_hash
+      values.map do |attrs|
+        # Remove one-to-many associations
         attrs.delete(:labels)
         attrs.delete(:reactions)
         attrs.delete(:user)
 
-        new(owner:, repository:, **attrs)
+        new(repository:, **attrs)
       end
     end
 
-    def initialize(owner:, repository:, **attributes)
-      @owner = owner
+    def self.find_children(parent:, **options)
+      response = parent.client.list_issues(parent.path, **options)
+
+      build_from_hash(repository: parent, response:)
+    end
+
+    # This relies upon the REST API
+    def self.where(parent:, **attrs)
+      # REST::Node.where(parent:, **attrs)
+
+      children = find_children(parent:)
+      filtered = children.select do |child|
+        matches = attrs.map do |k, v|
+          child.public_send(k) == v
+        end
+        matches.reduce(:|)
+      end
+      filtered
+    end
+
+    def initialize(repository:, **attributes)
       @repository = repository
+      @owner = @repository.owner
 
       attributes.each do |key, value|
         signature = "#{key}="

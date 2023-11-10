@@ -16,6 +16,7 @@ module Samvera
     end
 
     def self.find_by(**options)
+      options[:parent] = options[:repository]
       persisted = where(**options)
       persisted.first
     end
@@ -57,4 +58,4 @@ module Samvera
       self.class.find_by(repository:, name:)
     end
   end
-  end
+end

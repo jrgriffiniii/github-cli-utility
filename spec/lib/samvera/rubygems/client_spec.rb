@@ -100,7 +100,6 @@ RSpec.describe Samvera::RubyGems::Client do
         },
         body: response_body_json
       )
-
     end
 
     it "retrieves a Gem given the name for the Gem" do
