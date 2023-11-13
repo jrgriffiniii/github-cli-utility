@@ -20,6 +20,7 @@ module Samvera
         @api_token = api_token
         @context = {}
         @uri = uri || self.class.default_uri
+
         @schema_uri = schema_uri || self.class.default_schema_uri
         if schema_cached.nil?
           @schema_cached = File.exist?(schema_json_file)
@@ -43,7 +44,97 @@ module Samvera
         end
       end
 
-      def build_graphql_request(query:, variables: nil, operation_name: nil)
+      def schema
+        @schema ||= ::GraphQL::Client.load_schema(schema_json)
+      end
+
+      def queries
+        Queries
+      end
+
+      def mutations
+        Mutations
+      end
+
+      # Public methods for queries
+
+      ## Projects
+
+      def find_projects_by_org(login:)
+        variables = {
+          login:
+        }
+        results = execute_graphql_query(query: queries.find_projects_by_org, variables:)
+        create_project_v2 = results["organization"]
+        projects_v2 = create_project_v2["projectsV2"]
+        nodes = projects_v2["nodes"]
+        nodes
+      end
+
+      def create_project(owner_id:, title:, repository_id:)
+        variables = {
+          ownerId: owner_id,
+          title:,
+          repositoryId: repository_id
+        }
+        results = execute_graphql_query(query: mutations.create_project, variables:)
+        create_project_v2 = results["createProjectV2"]
+        project_v2 = create_project_v2["projectV2"]
+        project_v2
+      end
+
+      def add_project_item(project_id:, item_id:)
+        variables = {
+          projectId: project_id,
+          contentId: item_id
+        }
+        results = execute_graphql_query(query: mutations.add_project_item_by_id, variables:)
+        add_project_v2_item_by_id = results["addProjectV2ItemById"]
+        item = add_project_v2_item_by_id["item"]
+        item
+      end
+
+      def delete_project_item(item_id:, project_id:)
+        variables = {
+          itemId: item_id,
+          projectId: project_id
+        }
+        results = execute_graphql_query(query: mutations.delete_project_item, variables:)
+        delete_project_v2_item = results["deleteProjectV2Item"]
+        item = delete_project_v2_item["item"]
+        item
+      end
+
+      def delete_project(project_id:)
+        variables = {
+          projectId: project_id
+        }
+        results = execute_graphql_query(query: mutations.delete_project, variables:)
+        create_project_v2 = results["deleteProjectV2"]
+        project_v2 = create_project_v2["projectV2"]
+        project_v2
+      end
+
+      ## Issue/Pull Request Assignment
+      def add_assignees(node_id:, assignee_ids:)
+        variables = {
+          assignableId: node_id,
+          assigneeIds: assignee_ids
+        }
+        results = execute_graphql_query(query: mutations.add_assignees, variables:)
+      end
+
+      def remove_assignees(node_id:, assignee_ids:)
+        variables = {
+          assignableId: node_id,
+          assigneeIds: assignee_ids
+        }
+        results = execute_graphql_query(query: mutations.remove_assignees, variables:)
+      end
+
+      private
+
+    def build_graphql_request(query:, variables: nil, operation_name: nil)
         request = Net::HTTP::Post.new(@uri)
         request["Accept"] = "application/json"
         request["Content-Type"] = "application/json"
@@ -74,7 +165,8 @@ module Samvera
         response_data
       end
 
-      # GraphQL schema handling might not be necessary
+      ## GraphQL Schema management
+# GraphQL schema handling might not be necessary
       def build_schema_request
         request = Net::HTTP::Get.new(@uri)
         request["Accept"] = "application/json"
@@ -119,219 +211,6 @@ module Samvera
         parsed
       end
 
-      def schema
-        @schema ||= ::GraphQL::Client.load_schema(schema_json)
-      end
-
-      # GraphQL mutations
-
-      # https://docs.github.com/en/graphql/reference/mutations#createprojectv2
-      # https://docs.github.com/en/graphql/reference/input-objects#createprojectv2input
-      def self.create_project_mutation
-        <<-GRAPHQL
-          mutation($ownerId: ID!, $title: String!, $repositoryId: ID!) {
-            createProjectV2(input: { ownerId: $ownerId, title: $title, repositoryId: $repositoryId }) {
-              projectV2 {
-                id
-                title
-              }
-            }
-          }
-        GRAPHQL
-      end
-
-      # https://docs.github.com/en/graphql/reference/mutations#deleteprojectv2
-      # https://docs.github.com/en/graphql/reference/input-objects#deleteprojectv2input
-      def self.delete_project_mutation
-        <<-GRAPHQL
-          mutation($projectId: ID!) {
-            deleteProjectV2(input: { projectId: $projectId }) {
-              projectV2 {
-                id
-              }
-            }
-          }
-        GRAPHQL
-      end
-
-      # https://docs.github.com/en/graphql/reference/mutations#addprojectv2itembyid
-      # https://docs.github.com/en/graphql/reference/input-objects#addprojectv2itembyidinput
-      def add_project_item_by_id_mutation
-        <<-GRAPHQL
-          mutation($projectId: ID!, $contentId: ID!) {
-            addProjectV2ItemById(input: { projectId: $projectId contentId: $contentId }) {
-              item {
-                id
-              }
-            }
-          }
-        GRAPHQL
-      end
-
-      # https://docs.github.com/en/graphql/reference/mutations#deleteprojectv2item
-      # https://docs.github.com/en/graphql/reference/input-objects#deleteprojectv2iteminput
-      def delete_project_item_mutation
-        <<-GRAPHQL
-          mutation($itemId: ID!, $projectId: ID!) {
-            deleteProjectV2Item(input: { itemId: $itemId projectId: $projectId }) {
-              deletedItemId
-            }
-          }
-        GRAPHQL
-      end
-
-      # https://docs.github.com/en/graphql/reference/mutations#addassigneestoassignable
-      def add_assignees_mutation
-        <<-GRAPHQL
-          mutation($assignableId: ID!, $assigneeIds: [ID!]!) {
-            addAssigneesToAssignable(input: { assignableId: $assignableId, assigneeIds: $assigneeIds }) {
-              assignable {
-                assignees(first: #{FIRST}) {
-                  nodes {
-                    id
-                  }
-                }
-              }
-            }
-          }
-        GRAPHQL
-      end
-
-      # https://docs.github.com/en/graphql/reference/mutations#removeassigneesfromassignable
-      def remove_assignees_mutation
-        <<-GRAPHQL
-          mutation($assignableId: ID!, $assigneeIds: [ID!]!) {
-            removeAssigneesFromAssignable(input: { assignableId: $assignableId, assigneeIds: $assigneeIds }) {
-              assignable {
-                assignees(first: #{FIRST}) {
-                  nodes {
-                    id
-                  }
-                }
-              }
-            }
-          }
-        GRAPHQL
-      end
-
-      # GraphQL queries
-
-      # https://docs.github.com/en/graphql/reference/queries#organization
-      # https://docs.github.com/en/graphql/reference/objects#organization
-      # https://docs.github.com/en/graphql/reference/objects#projectv2
-      def self.find_projects_by_org_query
-        <<-GRAPHQL
-          query($login: String!) {
-            organization(login: $login) {
-              projectsV2(first: #{FIRST}) {
-                nodes {
-                  closed
-                  closedAt
-                  createdAt
-                  databaseId
-                  id
-                  number
-                  public
-                  readme
-                  resourcePath
-                  shortDescription
-                  template
-                  title
-                  updatedAt
-                  url
-                  items(first: #{FIRST}) {
-                    nodes {
-                      id
-                      type
-                      content {
-                        ... on PullRequest {
-                          id
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        GRAPHQL
-      end
-
-      # Public methods for queries
-
-      ## Projects
-
-      def find_projects_by_org(login:)
-        variables = {
-          login:
-        }
-        results = execute_graphql_query(query: self.class.find_projects_by_org_query, variables:)
-        create_project_v2 = results["organization"]
-        projects_v2 = create_project_v2["projectsV2"]
-        nodes = projects_v2["nodes"]
-        nodes
-      end
-
-      def create_project(owner_id:, title:, repository_id:)
-        variables = {
-          ownerId: owner_id,
-          title:,
-          repositoryId: repository_id
-        }
-        results = execute_graphql_query(query: self.class.create_project_mutation, variables:)
-        create_project_v2 = results["createProjectV2"]
-        project_v2 = create_project_v2["projectV2"]
-        project_v2
-      end
-
-      def add_project_item(project_id:, item_id:)
-        variables = {
-          projectId: project_id,
-          contentId: item_id
-        }
-        results = execute_graphql_query(query: add_project_item_by_id_mutation, variables:)
-        add_project_v2_item_by_id = results["addProjectV2ItemById"]
-        item = add_project_v2_item_by_id["item"]
-        item
-      end
-
-      def delete_project_item(item_id:, project_id:)
-        variables = {
-          itemId: item_id,
-          projectId: project_id
-        }
-        results = execute_graphql_query(query: delete_project_item_mutation, variables:)
-        delete_project_v2_item = results["deleteProjectV2Item"]
-        item = delete_project_v2_item["item"]
-        item
-      end
-
-      def delete_project(project_id:)
-        variables = {
-          projectId: project_id
-        }
-        results = execute_graphql_query(query: self.class.delete_project_mutation, variables:)
-        create_project_v2 = results["deleteProjectV2"]
-        project_v2 = create_project_v2["projectV2"]
-        project_v2
-      end
-
-      ## Issue/Pull Request Assignment
-      def add_assignees(node_id:, assignee_ids:)
-        variables = {
-          assignableId: node_id,
-          assigneeIds: assignee_ids
-        }
-        results = execute_graphql_query(query: add_assignees_mutation, variables:)
-      end
-
-      def remove_assignees(node_id:, assignee_ids:)
-        variables = {
-          assignableId: node_id,
-          assigneeIds: assignee_ids
-        }
-        results = execute_graphql_query(query: remove_assignees_mutation, variables:)
-      end
     end
   end
 end
