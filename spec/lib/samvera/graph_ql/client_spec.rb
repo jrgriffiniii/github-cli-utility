@@ -100,6 +100,7 @@ describe Samvera::GraphQL::Client do
           {
           }
         end
+
         it "adds an Issue or Pull Request to a given project" do
           projects = client.add_project_item(project_id:, item_id:)
         end

@@ -4,3 +4,27 @@ inherit_gem:
   - config/default.yml # generic Ruby rules and cops
 require:
   - rubocop-rspec
+
+RSpec/ExampleLength:
+  Exclude:
+    - spec/lib/samvera/graph_ql/client_spec.rb
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - spec/lib/samvera/issue_spec.rb
+    - spec/lib/samvera/label_spec.rb
+    - spec/lib/samvera/project_spec.rb
+    - spec/lib/samvera/graph_ql/client_spec.rb
+    - spec/lib/samvera/ruby_gems/client_spec.rb
+
+RSpec/MultipleMemoizedHelpers:
+  Exclude:
+    - spec/lib/samvera/issue_spec.rb
+    - spec/lib/samvera/label_spec.rb
+    - spec/lib/samvera/project_spec.rb
+    - spec/lib/samvera/graph_ql/client_spec.rb
+    - spec/lib/samvera/ruby_gems/client_spec.rb
+
+RSpec/NestedGroups:
+  Exclude:
+    - spec/lib/samvera/graph_ql/client_spec.rb

@@ -134,7 +134,7 @@ module Samvera
 
       private
 
-    def build_graphql_request(query:, variables: nil, operation_name: nil)
+      def build_graphql_request(query:, variables: nil, operation_name: nil)
         request = Net::HTTP::Post.new(@uri)
         request["Accept"] = "application/json"
         request["Content-Type"] = "application/json"
