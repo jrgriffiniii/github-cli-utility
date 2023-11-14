@@ -69,6 +69,10 @@ module Samvera
       graphql_client.add_project_item(project_id: self.node_id, item_id: item_node_id)
     end
 
+    # Find the GraphQL item node ID for any given issue or pull request GraphQL
+    #   node ID
+    # @param [String] the GraphQL node ID
+    # @return [String]
     def find_item_id_for(node_id:)
       selected = items.select { |item| item["content"]["id"] == node_id }
       return if selected.empty?
@@ -77,6 +81,8 @@ module Samvera
       item["id"]
     end
 
+    # Remove the association between a pull request or issue with a project
+    # @param [String] the GraphQL node ID
     def remove_pull_request(node_id:)
       item_node_id = find_item_id_for(node_id:)
       graphql_client.delete_project_item(project_id: self.node_id, item_id: item_node_id)

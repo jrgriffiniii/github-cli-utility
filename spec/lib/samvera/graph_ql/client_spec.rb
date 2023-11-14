@@ -106,12 +106,28 @@ describe Samvera::GraphQL::Client do
       end
 
       describe "#delete_project_item" do
-        let(:response_body_json) do
+        let(:project_item) do
           {
+            "content" => {
+              "id" => item_id
+            }
           }
         end
+        let(:response_body_json) do
+          {
+            data: {
+              deleteProjectV2Item: {
+                item: project_item
+              }
+            }
+          }
+        end
+        let(:item_id) { "test-item-id" }
+        let(:project_id) { "test-project-id" }
+
         it "removes an Issue or Pull Request from a given project" do
-          projects = client.delete_project_item(item_id:, project_id:)
+          item = client.delete_project_item(item_id:, project_id:)
+          expect(item).to eq(project_item)
         end
       end
 
