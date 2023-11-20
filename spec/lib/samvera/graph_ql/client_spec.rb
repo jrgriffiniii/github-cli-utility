@@ -96,13 +96,25 @@ describe Samvera::GraphQL::Client do
       end
 
       describe "#add_project_item" do
+        let(:project_id) { "test-project-id" }
+        let(:item_id) { "test-item-id" }
+        let(:project_item) do
+          {
+          }
+        end
         let(:response_body_json) do
           {
+            data: {
+              addProjectV2ItemById: {
+                item: project_item
+              }
+            }
           }
         end
 
         it "adds an Issue or Pull Request to a given project" do
-          projects = client.add_project_item(project_id:, item_id:)
+          response = client.add_project_item(project_id:, item_id:)
+          expect(response).not_to be nil
         end
       end
 
