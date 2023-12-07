@@ -12,7 +12,7 @@ def stub_graphql_find_projects_by_org(login:, access_token:, nodes: [])
   }
   graphql_response = JSON.generate(graphql_results)
 
-  query = Samvera::GraphQL::Client.find_projects_by_org_query
+  query = Samvera::GraphQL::Queries.find_projects_by_org
   variables = {
     login:
   }

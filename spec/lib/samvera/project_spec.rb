@@ -38,7 +38,7 @@ RSpec.describe Samvera::Project do
       }
     end
 
-    let(:mutation) { Samvera::GraphQL::Client.create_project_mutation }
+    let(:mutation) { Samvera::GraphQL::Mutations.create_project }
     let(:variables) do
       {
         ownerId: owner_id,
@@ -94,7 +94,7 @@ RSpec.describe Samvera::Project do
   end
 
   describe "#delete" do
-    let(:mutation) { Samvera::GraphQL::Client.delete_project_mutation }
+    let(:mutation) { Samvera::GraphQL::Mutations.delete_project }
     let(:variables) do
       {
         projectId: node_id
