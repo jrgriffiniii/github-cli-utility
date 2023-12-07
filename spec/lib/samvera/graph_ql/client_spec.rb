@@ -163,17 +163,38 @@ describe Samvera::GraphQL::Client do
 
         it "deletes any given project" do
           deleted = client.delete_project(project_id:)
-          expect(deleted).to be true
+          expect(deleted).to be_a(Hash)
+          expect(deleted).not_to be_empty
         end
       end
 
       describe "#add_assignees" do
+        let(:assignee_ids) do
+          ["test-id"]
+        end
+        let(:response_body_json) do
+          {
+            data: {
+              deleteProjectV2: {
+                projectV2: {
+                }
+              }
+            }
+          }
+        end
+
         it "assigns an Issue or Pull Request to users" do
-          projects = client.add_assignees(node_id:, assignee_ids:)
+          added = client.add_assignees(node_id:, assignee_ids:)
+          expect(added).to be_a(Hash)
+          expect(added).not_to be_empty
         end
       end
 
       describe "#remove_assignees" do
+        let(:assignee_ids) do
+          ["test-user"]
+        end
+
         it "remove users assigned to a given Issue or Pull Request" do
           projects = client.remove_assignees(node_id:, assignee_ids:)
         end
@@ -196,7 +217,7 @@ describe Samvera::GraphQL::Client do
           items: [],
           resource_path: nil,
           short_description: nil,
-          title: nil,
+          title:,
           updated_at: nil
         }
       end
@@ -223,8 +244,6 @@ describe Samvera::GraphQL::Client do
         JSON.generate(response_body_json)
       end
 
-
-
       it "creates a new GitHub project" do
         response = client.create_project(owner_id:, title:, repository_id:)
         expect(response).to include("nodes")
@@ -232,11 +251,7 @@ describe Samvera::GraphQL::Client do
         expect(response["nodes"]).not_to be_empty
         first_node = response["nodes"].first
         expect(first_node).to include("title" => title)
-
       end
     end
-
-
   end
-
 end

@@ -110,11 +110,7 @@ module Samvera
           projectId: project_id
         }
         results = execute_graphql_query(query: mutations.delete_project, variables:)
-        delete_project_v2 = results["deleteProjectV2"]
-        return false unless delete_project_v2 && delete_project_v2.key?("projectV2")
-
-        project_v2 = delete_project_v2["projectV2"]
-        project_v2.key?("id")
+        results
       end
 
       ## Issue/Pull Request Assignment
@@ -124,6 +120,8 @@ module Samvera
           assigneeIds: assignee_ids
         }
         results = execute_graphql_query(query: mutations.add_assignees, variables:)
+
+        results
       end
 
       def remove_assignees(node_id:, assignee_ids:)
@@ -132,6 +130,8 @@ module Samvera
           assigneeIds: assignee_ids
         }
         results = execute_graphql_query(query: mutations.remove_assignees, variables:)
+
+        results
       end
 
       private
