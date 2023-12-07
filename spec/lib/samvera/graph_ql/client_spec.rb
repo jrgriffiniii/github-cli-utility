@@ -70,6 +70,9 @@ describe Samvera::GraphQL::Client do
           "Content-Type": "application/json"
         ]
       end
+      let(:response_body_json) do
+        {}
+      end
       let(:response_body) do
         JSON.generate(response_body_json)
       end
@@ -145,8 +148,22 @@ describe Samvera::GraphQL::Client do
       end
 
       describe "#delete_project" do
+        let(:response_body_json) do
+          {
+            data: {
+              deleteProjectV2: {
+                projectV2: {
+                  id: project_id
+                }
+              }
+            }
+          }
+        end
+        let(:project_id) { "test-project-id" }
+
         it "deletes any given project" do
-          projects = client.delete_project(project_id:)
+          deleted = client.delete_project(project_id:)
+          expect(deleted).to be true
         end
       end
 

@@ -110,9 +110,11 @@ module Samvera
           projectId: project_id
         }
         results = execute_graphql_query(query: mutations.delete_project, variables:)
-        create_project_v2 = results["deleteProjectV2"]
-        project_v2 = create_project_v2["projectV2"]
-        project_v2
+        delete_project_v2 = results["deleteProjectV2"]
+        return false unless delete_project_v2 && delete_project_v2.key?("projectV2")
+
+        project_v2 = delete_project_v2["projectV2"]
+        project_v2.key?("id")
       end
 
       ## Issue/Pull Request Assignment
