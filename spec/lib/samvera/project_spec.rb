@@ -22,6 +22,7 @@ RSpec.describe Samvera::Project do
     }
   end
 
+
   before do
     allow(client).to receive(:access_token).and_return("access-token")
 
@@ -29,6 +30,26 @@ RSpec.describe Samvera::Project do
       body: graphql_query_json,
       headers: graphql_query_headers
     ).to_return(status: 200, body: graphql_response)
+  end
+
+  describe ".find_children_by" do
+    let(:graphql_query_json) { JSON.generate(graphql_query) }
+    let(:access_token) { "access-token" }
+    let(:graphql_query_headers) do
+      {
+        "Accept" => "application/json",
+        "Authorization" => "bearer #{access_token}",
+        "Content-Type" => "application/json"
+      }
+    end
+
+    let(:graphql_api_uri) { Samvera::GraphQL::Client.default_uri }
+    let(:api_token) { access_token }
+
+    it "" do
+      described_class.find_children_by(api_token: , login: owner_login)
+    end
+
   end
 
   describe "#create" do
@@ -75,7 +96,6 @@ RSpec.describe Samvera::Project do
         "Content-Type" => "application/json"
       }
     end
-    let(:graphql_api_uri) { Samvera::GraphQL::Client.default_uri }
 
     before do
       stub_graphql_find_projects_by_org(login: owner_login, access_token:)
@@ -142,6 +162,5 @@ RSpec.describe Samvera::Project do
     it "updates the state of the project" do
       expect(project.persisted?).to be false
     end
-
   end
 end

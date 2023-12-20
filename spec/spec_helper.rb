@@ -21,6 +21,7 @@ require "pry-byebug"
 require "webmock/rspec"
 require "simplecov"
 SimpleCov.add_filter([
+  "cli",
   "spec",
 ])
 SimpleCov.start

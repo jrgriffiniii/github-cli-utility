@@ -84,6 +84,9 @@ RSpec.describe Samvera::Issue do
 
   end
 
+  describe ".find_children_by" do
+  end
+
   describe ".find_or_create_by" do
     let(:issue) { described_class.find_or_create_by(repository:, number:) }
 
