@@ -21,7 +21,7 @@ RSpec.describe Samvera::Project do
       title:
     }
   end
-
+  let(:graphql_api_uri) { Samvera::GraphQL::Client.default_uri }
 
   before do
     allow(client).to receive(:access_token).and_return("access-token")
@@ -33,6 +33,36 @@ RSpec.describe Samvera::Project do
   end
 
   describe ".find_children_by" do
+    let(:graphql_results) do
+      {
+        data: {
+          organization: {
+            projectsV2: {
+              nodes: [
+                node_id:
+              ]
+            }
+          }
+        }
+      }
+    end
+    let(:graphql_response) do
+      JSON.generate(graphql_results)
+    end
+
+    let(:query) { Samvera::GraphQL::Queries.find_projects_by_org }
+    let(:login) { owner_login }
+    let(:variables) do
+      {
+        login:
+      }
+    end
+    let(:graphql_query) do
+      {
+        query:,
+        variables:
+      }
+    end
     let(:graphql_query_json) { JSON.generate(graphql_query) }
     let(:access_token) { "access-token" }
     let(:graphql_query_headers) do
@@ -42,14 +72,20 @@ RSpec.describe Samvera::Project do
         "Content-Type" => "application/json"
       }
     end
-
-    let(:graphql_api_uri) { Samvera::GraphQL::Client.default_uri }
     let(:api_token) { access_token }
 
-    it "" do
-      described_class.find_children_by(api_token: , login: owner_login)
+    it "finds all child resources" do
+      children = described_class.find_children_by(
+        api_token:,
+        login: owner_login,
+        node_id:
+      )
+      expect(children).to be_an(Array)
+      expect(children).not_to be_empty
+      child = children.first
+      expect(child).to be_a(Hash)
+      expect(child).to include("node_id" => "test-node-id")
     end
-
   end
 
   describe "#create" do
@@ -58,7 +94,6 @@ RSpec.describe Samvera::Project do
         title:
       }
     end
-
     let(:mutation) { Samvera::GraphQL::Mutations.create_project }
     let(:variables) do
       {
