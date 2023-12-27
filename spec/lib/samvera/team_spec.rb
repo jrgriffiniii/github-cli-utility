@@ -8,7 +8,6 @@ RSpec.describe Samvera::Team do
   let(:created_at) {}
   let(:description) {}
   let(:html_url) {}
-  let(:members) {}
   let(:members_count) {}
   let(:members_url) {}
   let(:name) {}
@@ -28,8 +27,6 @@ RSpec.describe Samvera::Team do
   let(:members) do
     []
   end
-  #let(:id) { "test-id" }
-  #let(:node_id) { "test-node-id" }
 
   let(:graphql_api_uri) { Samvera::GraphQL::Client.default_uri }
 
