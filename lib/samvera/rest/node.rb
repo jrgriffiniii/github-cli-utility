@@ -17,10 +17,6 @@ module Samvera
         new(client:, **attrs)
       end
 
-      def self.where(parent:, **attrs)
-
-      end
-
       def initialize(client:, **attributes)
         @client = client
 

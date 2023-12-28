@@ -8,6 +8,7 @@ require:
 RSpec/ExampleLength:
   Exclude:
     - spec/lib/samvera/graph_ql/client_spec.rb
+    - spec/lib/samvera/project_spec.rb
     - spec/lib/samvera/team_spec.rb
 
 RSpec/MultipleExpectations:
@@ -26,6 +27,7 @@ RSpec/MultipleMemoizedHelpers:
     - spec/lib/samvera/project_spec.rb
     - spec/lib/samvera/graph_ql/client_spec.rb
     - spec/lib/samvera/ruby_gems/client_spec.rb
+    - spec/lib/samvera/repository_spec.rb
     - spec/lib/samvera/team_spec.rb
 
 RSpec/NestedGroups:

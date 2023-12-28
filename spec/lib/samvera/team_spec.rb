@@ -40,7 +40,6 @@ RSpec.describe Samvera::Team do
         created_at:,
         description:,
         html_url:,
-        members:,
         members_count:,
         members_url:,
         name:,

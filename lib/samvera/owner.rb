@@ -14,18 +14,9 @@ module Samvera
                   :login,
                   :repos_url
 
-    def self.build(client:, values:)
-      values.map do |org_json|
+    def self.build_from_responses(client:, responses:)
+      responses.map do |org_json|
         new(client:, **org_json)
-      end
-    end
-
-    def initialize(client:, **attributes)
-      @client = client
-
-      attributes.each do |key, value|
-        signature = "#{key}="
-        self.public_send(signature, value)
       end
     end
 

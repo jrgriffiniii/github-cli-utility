@@ -85,6 +85,9 @@ RSpec.describe Samvera::Issue do
   end
 
   describe ".find_children_by" do
+    xit do
+
+    end
   end
 
   describe ".find_or_create_by" do

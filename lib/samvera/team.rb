@@ -38,16 +38,6 @@ module Samvera
       nil
     end
 
-    def initialize(client:, members: [], **attributes)
-      @client = client
-      @members = members
-
-      attributes.each do |key, value|
-        signature = "#{key}="
-        self.public_send(signature, value)
-      end
-    end
-
     def add_user(user:, **options)
       @client.add_team_member(id, user.login, **options)
     end

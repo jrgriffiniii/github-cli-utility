@@ -9,11 +9,12 @@ module Samvera
 
     def self.find_by(login:)
       response = client.organizations(**options)
+      response
     end
 
     def self.build_from_octokit(client:, **options)
-      response = client.organizations(**options)
-      build(client:, values: response)
+      responses = client.organizations(**options)
+      build_from_responses(client:, responses:)
     end
   end
 end
