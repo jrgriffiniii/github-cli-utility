@@ -32,13 +32,7 @@ RSpec.describe Samvera::Team do
 
   before do
     allow(client).to receive(:access_token).and_return("access-token")
-
-    #stub_request(:post, graphql_api_uri).with(
-    #  body: graphql_query_json,
-    #  headers: graphql_query_headers
-    #).to_return(status: 200, body: graphql_response)
   end
-
 
   describe ".build_from_response" do
     let(:response) do
