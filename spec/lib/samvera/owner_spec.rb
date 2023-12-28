@@ -66,4 +66,25 @@ RSpec.describe Samvera::Owner do
       expect(built.description).to eq(description)
     end
   end
+
+  describe "#find_repository_by" do
+    let(:repository_name) { "repository" }
+    let(:organization_repositories) do
+      [
+        {
+          name: repository_name
+        }
+      ]
+    end
+
+    before do
+      allow(client).to receive(:organization_repositories).and_return(organization_repositories)
+    end
+
+    it "finds the Repository object using selected attributes" do
+      repository = owner.find_repository_by(name: repository_name)
+      expect(repository).to be_a(Samvera::Repository)
+      expect(repository.name).to eq(repository_name)
+    end
+  end
 end
