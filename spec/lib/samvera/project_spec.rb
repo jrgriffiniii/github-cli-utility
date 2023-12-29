@@ -88,6 +88,74 @@ RSpec.describe Samvera::Project do
     end
   end
 
+  describe ".where" do
+    let(:graphql_results) do
+      {
+        data: {
+          organization: {
+            projectsV2: {
+              nodes: [
+                {
+                  closedAt: nil,
+                  createdAt: nil,
+                  databaseId: nil,
+                  id: node_id,
+                  number: nil,
+                  resourcePath: nil,
+                  shortDescription: nil,
+                  title: nil,
+                  updatedAt: nil,
+                  items: {
+                    nodes: []
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    end
+    let(:graphql_response) do
+      JSON.generate(graphql_results)
+    end
+
+    let(:query) { Samvera::GraphQL::Queries.find_projects_by_org }
+    let(:login) { owner_login }
+    let(:variables) do
+      {
+        login:
+      }
+    end
+    let(:graphql_query) do
+      {
+        query:,
+        variables:
+      }
+    end
+    let(:graphql_query_json) { JSON.generate(graphql_query) }
+    let(:access_token) { "access-token" }
+    let(:graphql_query_headers) do
+      {
+        "Accept" => "application/json",
+        "Authorization" => "bearer #{access_token}",
+        "Content-Type" => "application/json"
+      }
+    end
+    let(:api_token) { access_token }
+
+    it "finds all child resources matching certain conditions" do
+      children = described_class.where(
+        repository:,
+        id: node_id
+      )
+      expect(children).to be_an(Array)
+      expect(children).not_to be_empty
+      child = children.first
+      expect(child).to be_a(described_class)
+      expect(child.node_id).to eq("test-node-id")
+    end
+  end
+
   describe "#create" do
     let(:attributes) do
       {
