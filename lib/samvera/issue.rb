@@ -30,8 +30,7 @@ module Samvera
                   :updated_at
 
     def self.build_from_hash(repository:, response:)
-      values = response.to_hash
-      values.map do |attrs|
+      response.map do |attrs|
         # Remove one-to-many associations
         attrs.delete(:labels)
         attrs.delete(:reactions)

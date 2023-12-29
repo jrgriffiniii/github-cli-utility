@@ -118,7 +118,7 @@ module Samvera
     def issues(**options)
       response = client.list_issues(path, **options)
 
-      Issue.build_from_hash(owner:, repository: self, values: response)
+      Issue.build_from_hash(repository: self, response:)
     end
 
     def pull_requests(**options)

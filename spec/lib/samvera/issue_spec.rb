@@ -93,20 +93,18 @@ RSpec.describe Samvera::Issue do
   describe ".find_or_create_by" do
     let(:issue) { described_class.find_or_create_by(repository:, number:) }
 
-    let(:list_issues_response) { double }
+    let(:list_issues_response) do
+      [
+        persisted_attributes
+      ]
+    end
     let(:persisted_attributes) do
       attributes.merge({
         persisted: true
       })
     end
-    let(:list_issues_response_body) do
-      [
-        persisted_attributes
-      ]
-    end
 
     before do
-      allow(list_issues_response).to receive(:to_hash).and_return(list_issues_response_body)
       allow(client).to receive(:list_issues).and_return(list_issues_response)
     end
 

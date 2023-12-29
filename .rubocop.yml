@@ -21,6 +21,7 @@ RSpec/MultipleExpectations:
     - spec/lib/samvera/graph_ql/client_spec.rb
     - spec/lib/samvera/ruby_gems/client_spec.rb
     - spec/lib/samvera/team_spec.rb
+    - spec/lib/samvera/repository_spec.rb
 
 RSpec/MultipleMemoizedHelpers:
   Exclude:

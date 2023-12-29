@@ -19,13 +19,37 @@ RSpec.describe Samvera::Repository do
     }
   end
 
+  let(:graphql_api_uri) { Samvera::GraphQL::Client.default_uri }
+  let(:graphql_query_json) { JSON.generate(graphql_query) }
+  let(:access_token) { "access-token" }
+  let(:graphql_query_headers) do
+    {
+      "Accept" => "application/json",
+      "Authorization" => "bearer #{access_token}",
+      "Content-Type" => "application/json"
+    }
+  end
+  let(:graphql_query) do
+    {}
+  end
+  let(:graphql_results) do
+    {
+      data: {}
+    }
+  end
+  let(:graphql_response) do
+    JSON.generate(graphql_results)
+  end
+
+
+
   before do
     allow(client).to receive(:access_token).and_return("access-token")
 
-    stub_request(:post, graphql_api_uri).with(
-      body: graphql_query_json,
-      headers: graphql_query_headers
-    ).to_return(status: 200, body: graphql_response)
+    #stub_request(:post, graphql_api_uri).with(
+    #  body: graphql_query_json,
+    #  headers: graphql_query_headers
+    #).to_return(status: 200, body: graphql_response)
   end
 
   describe "#pull_requests" do
@@ -93,6 +117,34 @@ RSpec.describe Samvera::Repository do
     it "transmits a GraphQL request to the GitHub API" do
       #expect(a_request(:post, graphql_api_uri).with(body: graphql_query_json, headers: graphql_query_headers)).to have_been_made.once
       resource = repository.find_pull_request_by(number:)
+    end
+  end
+
+  describe "#issues" do
+    let(:list_issue) do
+      {
+        labels: [],
+        reactions: [],
+        user: {}
+      }
+    end
+    let(:list_issues) do
+      [
+        list_issue
+      ]
+    end
+
+    before do
+      allow(client).to receive(:list_issues).and_return(list_issues)
+    end
+
+    it "retrieves all of the GitHub Issues for a given repository" do
+      issues = repository.issues
+      expect(issues).to be_an(Array)
+      expect(issues).not_to be_empty
+      issue = issues.last
+
+      expect(issue).to be_a(Samvera::Issue)
     end
   end
 end
